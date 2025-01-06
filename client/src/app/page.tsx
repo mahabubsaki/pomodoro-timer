@@ -1,11 +1,14 @@
 import Navbar from "@/components/others/Navbar";
-import Image from "next/image";
+import Timer from "@/components/others/Timer";
 
-export default function Home() {
+
+export default function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined; }; }) {
   return (
-    <div>
+    <div className="dark">
 
       <Navbar />
+
+      <Timer searchParams={searchParams} />
     </div>
   );
 }

@@ -12,7 +12,7 @@ const Navbar = () => {
         <nav className=' px-3 sm:px-8 py-5'>
             <div className='flex justify-between items-center'>
                 <h1 className='text-xl sm:text-2xl font-bold text-white flex items-center gap-2'><LucideIcon name='book-check' size={ROOTENUMS.BIGICONSIZE} />{NAVBAR_ENUMS.APPNAME}</h1>
-                <ul className='flex gap-1 items-center'>
+                <ul className='flex gap-1 items-center '>
                     <NavList >
                         <LucideIcon name='circle-user' className='hidden sm:inline' size={ROOTENUMS.SMALLICONSIZE} />
                         <span className='hidden sm:inline'>{NAVBAR_ENUMS.SIGNIN}</span>

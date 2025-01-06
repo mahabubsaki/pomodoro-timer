@@ -1,7 +1,7 @@
-const NAVBAR_ENUMS = {
-    SIGNIN: 'Sign In',
-    APPNAME: 'Pomodoro',
-    DASHBOARD: 'Dashboard',
+enum NAVBAR_ENUMS {
+    SIGNIN = 'Sign In',
+    APPNAME = 'Pomodoro',
+    DASHBOARD = 'Dashboard',
 };
 
 
