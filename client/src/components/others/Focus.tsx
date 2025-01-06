@@ -8,6 +8,7 @@ import useSound from 'use-sound';
 import { useMediaQuery } from "@uidotdev/usehooks";
 import { AnimatePresence, motion } from 'motion/react';
 import NumberFlow from '@number-flow/react';
+import { useTheme } from 'next-themes';
 
 
 
@@ -20,6 +21,12 @@ const Focus = () => {
     const [playPause] = useSound('https://ucarecdn.com/b602d533-d98f-4edb-af82-407b6e6c48e9/togglebuttonoff166328.mp3');
     const [playDone] = useSound('https://ucarecdn.com/3db6cbb4-6839-406d-891d-2eb3a0f14c1b/soundalertdeviceturnonturnoffwindonechakongaudio174892.mp3');
     const [playRestart] = useSound('https://ucarecdn.com/c6e975fc-2bb7-4112-87f3-30b2d8e2740d/switchclickandbeep001a11602.mp3');
+
+    const { setTheme } = useTheme();
+
+    useEffect(() => {
+        setTheme('dark');
+    }, []);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -56,6 +63,7 @@ const Focus = () => {
         setIsRunning(false);
     };
     const handleRestart = () => {
+        if (time - 1 * 10 === 0) return;
         playRestart();
         toast.info('Restarted the Counting', {
             id: 'time-up',
@@ -106,14 +114,14 @@ const Focus = () => {
 
                                 </motion.button>}
                             </AnimatePresence>
-                            <AnimatePresence>
-                                {isRunning && <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} onClick={handleRestart} className='bg-white/20 p-5 group rounded-full overflow-hidden'>
 
-                                    <RotateCcw className='group-hover:text-red-500 text-white duration-300' size={isMediumDevice ? 40 : 24} />
+                            <button onClick={handleRestart} className='bg-white/20 p-5 group rounded-full overflow-hidden'>
+
+                                <RotateCcw className='group-hover:text-red-500 text-white duration-300' size={isMediumDevice ? 40 : 24} />
 
 
-                                </motion.button>}
-                            </AnimatePresence>
+                            </button>
+
                         </div>
                     </AnimatePresence>
 

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProviders";
 import { Toaster } from "@/components/ui/sonner";
+import Navbar from "@/components/others/Navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -21,22 +22,23 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-indigo-600 text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-wholeBg text-white`}
       >
         <div className="max-w-6xl mx-auto">
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
           >
+
+            <Navbar />
+
             {children}
           </ThemeProvider>
           <Toaster />

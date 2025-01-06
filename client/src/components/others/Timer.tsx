@@ -8,6 +8,7 @@ import Break from './Break';
 
 const Timer = ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined; }; }) => {
     const { route } = searchParams;
+
     return (
 
         <Tabs defaultValue={Array.isArray(route) ? route[0] : route ? route : TABSENUM.FOCUS} className="w-full px-4" >
