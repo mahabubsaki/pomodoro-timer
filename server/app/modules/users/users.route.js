@@ -1,11 +1,11 @@
 const express = require('express');
-const { registerController } = require('./users.controller');
-const hashPassword = require('./users.middleware');
+const { registerController, loginController, getUserController } = require('./users.controller');
+const { hashPassword, validate } = require('./users.middleware');
 const userRouter = express.Router();
 
-userRouter.get('/', (_, res) => {
-    res.send({ status: true, message: 'user route' });
-});
-userRouter.post('/register', hashPassword, registerController);
+
+userRouter.post('/register', validate('registerUsers'), hashPassword, registerController);
+userRouter.post('/findByEmail', validate('login'), loginController);
+userRouter.get('/getUser', getUserController);
 
 module.exports = userRouter;
