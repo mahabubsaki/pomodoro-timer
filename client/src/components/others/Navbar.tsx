@@ -1,4 +1,4 @@
-
+'use client';
 import React from 'react';
 import LucideIcon from '../common/LucideIcon';
 import NavList from '../common/NavList';
@@ -6,13 +6,19 @@ import ToolTip from '../common/ToolTip';
 import NAVBAR_ENUMS from '@/configs/enums/navbar';
 import ROOTENUMS from '@/configs/enums';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Button } from '../ui/button';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
+import { useSession, signOut } from 'next-auth/react';
+import { Button } from '../ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
 
 
 const Navbar = () => {
+    const x = useSession();
+    const user = x?.data?.user;
     return (
         <nav className=' px-3 sm:px-8 py-5'>
             <div className='flex justify-between items-center'>
@@ -20,9 +26,38 @@ const Navbar = () => {
                 <ul className='flex gap-1 items-center '>
 
 
-                    <Dialog>
+
+
+                    {user ? <>
+
+                        <Avatar>
+                            <AvatarImage src={user.avatarUrl} alt="@shadcn" />
+                            <AvatarFallback>U</AvatarFallback>
+                        </Avatar>
+                        <NavList>
+                            <button onClick={() => signOut({})}>
+                                <LucideIcon name='log-out' className='hidden sm:inline' size={ROOTENUMS.SMALLICONSIZE} />
+                                <span className='hidden sm:inline'>{NAVBAR_ENUMS.LOGOUT}</span>
+                                <div className='flex justify-center items-center sm:hidden'>
+                                    <ToolTip content={NAVBAR_ENUMS.LOGOUT}>
+                                        <LucideIcon name='log-out' size={ROOTENUMS.SMALLICONSIZE} />
+                                    </ToolTip>
+                                </div>
+                            </button>
+                        </NavList>
+                        <NavList >
+                            <LucideIcon name='layout-dashboard' className='hidden sm:inline' size={ROOTENUMS.SMALLICONSIZE} />
+                            <span className='hidden sm:inline'>{NAVBAR_ENUMS.DASHBOARD}</span>
+                            <div className='flex justify-center items-center sm:hidden'>
+                                <ToolTip content={NAVBAR_ENUMS.DASHBOARD}>
+                                    <LucideIcon name='layout-dashboard' size={ROOTENUMS.SMALLICONSIZE} />
+                                </ToolTip>
+                            </div>
+                        </NavList>
+                    </> : <> <Dialog>
                         <DialogTrigger asChild>
-                            <NavList >
+                            <li className=' text-sm text-white bg-white/30 px-3 py-1.5 text-white/90 cursor-pointer hover:text-white/100 flex rounded-md items-center gap-1 hover:brightness-125'>
+
                                 <LucideIcon name='circle-user' className='hidden sm:inline' size={ROOTENUMS.SMALLICONSIZE} />
                                 <span className='hidden sm:inline'>{NAVBAR_ENUMS.SIGNIN}</span>
                                 <div className='flex justify-center items-center sm:hidden'>
@@ -30,7 +65,7 @@ const Navbar = () => {
                                         <LucideIcon name='circle-user' size={ROOTENUMS.SMALLICONSIZE} />
                                     </ToolTip>
                                 </div>
-                            </NavList>
+                            </li>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
@@ -52,15 +87,10 @@ const Navbar = () => {
                         </DialogContent>
                     </Dialog>
 
-                    <NavList >
-                        <LucideIcon name='layout-dashboard' className='hidden sm:inline' size={ROOTENUMS.SMALLICONSIZE} />
-                        <span className='hidden sm:inline'>{NAVBAR_ENUMS.DASHBOARD}</span>
-                        <div className='flex justify-center items-center sm:hidden'>
-                            <ToolTip content={NAVBAR_ENUMS.DASHBOARD}>
-                                <LucideIcon name='layout-dashboard' size={ROOTENUMS.SMALLICONSIZE} />
-                            </ToolTip>
-                        </div>
-                    </NavList>
+
+
+
+                    </>}
                 </ul>
             </div>
         </nav>

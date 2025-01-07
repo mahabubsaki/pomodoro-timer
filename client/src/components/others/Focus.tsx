@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AspectRatio } from '../ui/aspect-ratio';
 
 import { CircleCheck, Pause, Play, RotateCcw } from 'lucide-react';
