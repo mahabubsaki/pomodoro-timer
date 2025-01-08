@@ -1,3 +1,4 @@
+const focusRouter = require("../modules/focus-session/focus.route");
 const userRouter = require("../modules/users/users.route");
 const express = require('express');
 
@@ -7,6 +8,9 @@ const applicationRoutes = [
     {
         path: '/auth', controller: userRouter
     },
+    {
+        path: '/focus', controller: focusRouter
+    }
 ];
 
 applicationRoutes.forEach(route => {

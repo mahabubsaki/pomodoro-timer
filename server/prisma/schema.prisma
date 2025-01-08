@@ -20,6 +20,7 @@ model User {
   password      String
   avatarUrl     String
   focusSessions FocusSession[]
+  breakSessions BreakSession[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -28,6 +29,18 @@ model FocusSession {
   id        String   @id @default(uuid())
   userId    String
   duration  Int
+  paused    Boolean
+  completed Boolean
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model BreakSession {
+  id        String   @id @default(uuid())
+  userId    String
+  duration  Int
+  paused    Boolean
+  completed Boolean
   timestamp DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 }
