@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 
 const handler = NextAuth({
-    secret: 'mysecret',
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
         CredentialsProvider({
             name: 'Credentials',
@@ -43,6 +43,7 @@ const handler = NextAuth({
 
             const fullUser = await baseAxios.get(`/auth/getUser?email=${session.user?.email}`);
             session.user.avatarUrl = fullUser.data.data.avatarUrl;
+            session.user.id = fullUser.data.data.id;
 
             console.log(session, 'in session');
             return session;

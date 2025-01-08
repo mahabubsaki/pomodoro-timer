@@ -13,16 +13,19 @@ import SignUp from './SignUp';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import Link from 'next/link';
 
 
 
 const Navbar = () => {
     const x = useSession();
     const user = x?.data?.user;
+    console.log(x);
     return (
         <nav className=' px-3 sm:px-8 py-5'>
             <div className='flex justify-between items-center'>
-                <h1 className='text-xl sm:text-2xl font-bold text-white flex items-center gap-2'><LucideIcon name='book-check' size={ROOTENUMS.BIGICONSIZE} />{NAVBAR_ENUMS.APPNAME}</h1>
+                <Link href={'/'}>
+                    <h1 className='text-xl sm:text-2xl font-bold text-white flex items-center gap-2'><LucideIcon name='book-check' size={ROOTENUMS.BIGICONSIZE} />{NAVBAR_ENUMS.APPNAME}</h1></Link>
                 <ul className='flex gap-1 items-center '>
 
 
@@ -35,7 +38,7 @@ const Navbar = () => {
                             <AvatarFallback>U</AvatarFallback>
                         </Avatar>
                         <NavList>
-                            <button onClick={() => signOut({})}>
+                            <div onClick={() => signOut({})}>
                                 <LucideIcon name='log-out' className='hidden sm:inline' size={ROOTENUMS.SMALLICONSIZE} />
                                 <span className='hidden sm:inline'>{NAVBAR_ENUMS.LOGOUT}</span>
                                 <div className='flex justify-center items-center sm:hidden'>
@@ -43,17 +46,20 @@ const Navbar = () => {
                                         <LucideIcon name='log-out' size={ROOTENUMS.SMALLICONSIZE} />
                                     </ToolTip>
                                 </div>
-                            </button>
-                        </NavList>
-                        <NavList >
-                            <LucideIcon name='layout-dashboard' className='hidden sm:inline' size={ROOTENUMS.SMALLICONSIZE} />
-                            <span className='hidden sm:inline'>{NAVBAR_ENUMS.DASHBOARD}</span>
-                            <div className='flex justify-center items-center sm:hidden'>
-                                <ToolTip content={NAVBAR_ENUMS.DASHBOARD}>
-                                    <LucideIcon name='layout-dashboard' size={ROOTENUMS.SMALLICONSIZE} />
-                                </ToolTip>
                             </div>
                         </NavList>
+
+                        <Link href={'/dashboard'}>
+                            <NavList >                               <LucideIcon name='layout-dashboard' className='hidden sm:inline' size={ROOTENUMS.SMALLICONSIZE} />
+                                <span className='hidden sm:inline'>{NAVBAR_ENUMS.DASHBOARD}</span>
+                                <div className='flex justify-center items-center sm:hidden'>
+                                    <ToolTip content={NAVBAR_ENUMS.DASHBOARD}>
+                                        <LucideIcon name='layout-dashboard' size={ROOTENUMS.SMALLICONSIZE} />
+                                    </ToolTip>
+                                </div>
+                            </NavList>
+                        </Link>
+
                     </> : <> <Dialog>
                         <DialogTrigger asChild>
                             <li className=' text-sm text-white bg-white/30 px-3 py-1.5 text-white/90 cursor-pointer hover:text-white/100 flex rounded-md items-center gap-1 hover:brightness-125'>

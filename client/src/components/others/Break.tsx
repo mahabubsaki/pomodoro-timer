@@ -2,18 +2,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AspectRatio } from '../ui/aspect-ratio';
 
-import { CircleCheck, Pause, Play, RotateCcw } from 'lucide-react';
+import { CircleCheck, LockIcon, Pause, Play, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import useSound from 'use-sound';
 import { useMediaQuery } from "@uidotdev/usehooks";
 import { AnimatePresence, motion } from 'motion/react';
 import NumberFlow from '@number-flow/react';
 import { useTheme } from 'next-themes';
+import { useSession } from 'next-auth/react';
 
 
 
 const Break = () => {
     const [time, setTime] = useState(1 * 10);
+    const session = useSession();
+    const user = session.data?.user;
     const [isRunning, setIsRunning] = useState(false);
 
     const [playComplete] = useSound('https://ucarecdn.com/a8cecdaa-5776-4c8b-965b-ab83a4f1a37a/done.mp3');
@@ -74,7 +77,7 @@ const Break = () => {
         "only screen and (min-width : 700px)"
     );
     return (
-        <div className='w-full sm:w-3/4 xl:w-1/2 mx-auto'>
+        <div className='w-full sm:w-3/4 xl:w-1/2 mx-auto relative'>
             <div className=" bg-white/10 backdrop-blur-sm mx-4 sm:mx-0 rounded-md p-4">
                 <AspectRatio ratio={isMediumDevice ? 16 / 9 : 12 / 10} className='flex justify-center gap-16 items-center flex-col' >
                     <span className='text-5xl md:text-8xl font-bold'>
@@ -130,7 +133,21 @@ const Break = () => {
             </div>
 
             <blockquote className='mt-4 text-sm md:text-lg font-semibold text-center italic'>"Take a break, refresh your mind and start again with full energy."</blockquote>
+            <AnimatePresence>
 
+                {!user && <motion.div initial={{
+                    opacity: 0
+                }} animate={{
+                    opacity: 1
+                }} exit={{
+                    opacity: 0
+                }} transition={{
+                    delay: 0.5
+                }} className='absolute inset-0 bg-white/10 backdrop-blur z-30 rounded-md flex justify-center items-center flex-col gap-4'>
+                    <LockIcon size={100} />
+                    <p className='text-2xl'>Login to Use this feature</p>
+                </motion.div>}
+            </AnimatePresence>
         </div>
     );
 };
