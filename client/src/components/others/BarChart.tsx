@@ -17,14 +17,6 @@ const chartConfig = {
     },
 };
 
-const chartData = [
-    { month: "January", desktop: 186 },
-    { month: "February", desktop: 305 },
-    { month: "March", desktop: 237 },
-    { month: "April", desktop: 73 },
-    { month: "May", desktop: 209 },
-    { month: "June", desktop: 214 },
-];
 
 
 const Barchart = () => {
@@ -34,44 +26,41 @@ const Barchart = () => {
         queryKey: ['barchart', id],
         queryFn: async () => {
             const response = await baseAxios.get(`/focus/get/${id}`);
-            console.log(response);
+            return response.data?.data || [];
         },
         enabled: !!id
     });
+    console.log(data);
     return (
         <div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Bar Chart</CardTitle>
-                    <CardDescription>January - June 2024</CardDescription>
+                    <CardTitle>Your Focus Minutes on Last 7 Days</CardTitle>
+                    <CardDescription>{data?.[0]?.date} - {data?.[data?.length - 1]?.date}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ChartContainer config={chartConfig}>
-                        <BarChart accessibilityLayer data={chartData}>
+                    {id && data && <ChartContainer config={chartConfig}>
+                        <BarChart accessibilityLayer data={data}>
                             <CartesianGrid vertical={false} />
                             <XAxis
                                 dataKey="date"
                                 tickLine={false}
                                 tickMargin={10}
                                 axisLine={false}
-                                tickFormatter={(value) => value.slice(0, 3)}
+                                tickFormatter={(value) => {
+
+                                    return value.slice(0, 3) + " " + value.split(" ")[1];
+                                }}
                             />
                             <ChartTooltip
                                 cursor={false}
                                 content={<ChartTooltipContent hideLabel />}
                             />
-                            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8} />
+                            <Bar dataKey="focusMinutes" fill="var(--color-desktop)" radius={8} />
                         </BarChart>
-                    </ChartContainer>
+                    </ChartContainer>}
                 </CardContent>
-                <CardFooter className="flex-col items-start gap-2 text-sm">
-                    <div className="flex gap-2 font-medium leading-none">
-                        Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-                    </div>
-                    <div className="leading-none text-muted-foreground">
-                        Showing total visitors for the last 6 months
-                    </div>
-                </CardFooter>
+
             </Card>
         </div>
     );

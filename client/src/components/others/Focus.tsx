@@ -10,9 +10,8 @@ import { AnimatePresence, motion } from 'motion/react';
 import NumberFlow from '@number-flow/react';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { baseAxios } from '@/lib/useAxios';
-
 
 
 const Focus = () => {
@@ -39,6 +38,17 @@ const Focus = () => {
 
     const { setTheme } = useTheme();
 
+
+    const id = session.data?.user?.id;
+    const { data } = useQuery({
+        queryKey: ['streak', id],
+        queryFn: async () => {
+            const response = await baseAxios.get(`/focus/streak/${id}`);
+            return response.data?.data || {};
+        },
+        enabled: !!id
+    });
+    console.log(data, 'streak data');
     useEffect(() => {
         setTheme('dark');
     }, []);
@@ -88,7 +98,7 @@ const Focus = () => {
             userId: user.id,
             completed: false,
             duration: 25 * 60 - time,
-            paused
+            paused,
         });
     };
     const handleRestart = () => {
