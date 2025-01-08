@@ -5,6 +5,7 @@ const cors = require('cors');
 const globalErrorHandler = require('./errors/global.error');
 const notFoundErrorHandler = require('./errors/404.error');
 const router = require('./routes');
+const { DateTime } = require('luxon');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/api/v1", router);
 
 //testing route
 app.get('/', (_, res) => {
+
     res.send({ status: true, message: 'server runinng perfectly' });
 });
 

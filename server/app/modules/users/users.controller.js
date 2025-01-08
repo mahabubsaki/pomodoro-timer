@@ -48,13 +48,13 @@ const loginController = catchAsync(async (req, res) => {
 });
 
 const getUserController = catchAsync(async (req, res) => {
-    console.log(req.query.email);
+    // console.log(req.query.email);
     const user = await db.user.findUnique({
         where: {
             email: req.query.email
         }
     });
-    console.log(user);
+    // console.log(user);
     res.send({ status: true, message: 'get user controller', data: user });
 });
 

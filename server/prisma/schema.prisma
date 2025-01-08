@@ -31,7 +31,7 @@ model FocusSession {
   duration  Int
   paused    Boolean
   completed Boolean
-  timestamp DateTime @default(now())
+  timestamp DateTime
   user      User     @relation(fields: [userId], references: [id])
 }
 
@@ -41,7 +41,7 @@ model BreakSession {
   duration  Int
   paused    Boolean
   completed Boolean
-  timestamp DateTime @default(now())
+  timestamp DateTime
   user      User     @relation(fields: [userId], references: [id])
 }
 
