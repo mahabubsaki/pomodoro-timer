@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import LucideIcon from '../common/LucideIcon';
 import NavList from '../common/NavList';
 import ToolTip from '../common/ToolTip';
@@ -14,6 +14,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import Link from 'next/link';
+import { baseAxios } from '@/lib/useAxios';
 
 
 
@@ -21,6 +22,15 @@ const Navbar = () => {
     const x = useSession();
     const user = x?.data?.user;
     console.log(x);
+    useEffect(() => {
+        if (user?.email) {
+            (async function xy() {
+                const fullUser = await baseAxios.get(`/auth/getUser?email=${user?.email}`);
+                console.log(fullUser.data, 'in session');
+                x.update({ user: { ...user, avatarUrl: fullUser.data.data.avatarUrl, id: fullUser.data.data.id } });
+            })();
+        }
+    }, [user?.email]);
     return (
         <nav className=' px-3 sm:px-8 py-5'>
             <div className='flex justify-between items-center'>

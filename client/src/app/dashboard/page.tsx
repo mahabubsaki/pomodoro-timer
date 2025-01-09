@@ -3,6 +3,7 @@
 import Barchart from '@/components/others/BarChart';
 import Completed from '@/components/others/Completed';
 import DailySessionTime from '@/components/others/DailySessionTime';
+import Streak from '@/components/others/Streak';
 import { useTheme } from 'next-themes';
 
 import React, { useEffect } from 'react';
@@ -21,6 +22,7 @@ const Dashboard = () => {
             <Barchart />
             <Completed />
             <DailySessionTime />
+            <Streak />
         </div>
     );
 };
