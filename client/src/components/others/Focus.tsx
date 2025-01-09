@@ -18,14 +18,7 @@ const Focus = () => {
     const [time, setTime] = useState(25 * 60);
     const [isRunning, setIsRunning] = useState(false);
     const [paused, setPaused] = useState(false);
-    const { mutate } = useMutation({
-        mutationFn: async (data) => {
-            console.log({ data });
-            return await baseAxios.post('/focus/create', data);
-        },
-        onError: (error) => console.error(error),
-        onSuccess: (data) => console.log(data)
-    });
+
 
     const session = useSession();
     const user = session.data?.user;
@@ -40,7 +33,7 @@ const Focus = () => {
 
 
     const id = session.data?.user?.id;
-    const { data } = useQuery({
+    const { data, refetch } = useQuery({
         queryKey: ['streak', id],
         queryFn: async () => {
             const response = await baseAxios.get(`/focus/streak/${id}`);
@@ -48,7 +41,17 @@ const Focus = () => {
         },
         enabled: !!id
     });
-    console.log(data, 'streak data');
+    const { mutate } = useMutation({
+        mutationFn: async (data) => {
+
+            return await baseAxios.post('/focus/create', data);
+        },
+        onError: (error) => console.error(error),
+        onSuccess: (data) => {
+            console.log(data);
+            refetch();
+        }
+    });
     useEffect(() => {
         setTheme('dark');
     }, []);
@@ -170,13 +173,15 @@ const Focus = () => {
             </div>
             <div className='flex justify-between items-center mt-4 gap-4'>
                 <div className='flex-1 bg-white/10 p-2 rounded-md text-center'>
-                    Session No : 1
+                    Session No : {data?.sessionNo || 0}
                 </div>
                 <div className='flex-1 bg-white/10 p-2 rounded-md text-center'>
-                    Streak : 0
+                    Streak : {data?.streakCount || 0}
                 </div>
             </div>
-            <blockquote className='mt-4 text-sm md:text-lg font-semibold text-center italic'>"It's time to focus, don't get distracted. Success takes patient."</blockquote>
+            <blockquote className='mt-4 text-sm md:text-lg font-semibold text-center italic'>
+                {data?.streakCount > 21 ? "🏆 Incredible dedication! You're unstoppable! You've shown real commitment and self-discipline. Stay strong—you're setting a powerful example for yourself. Keep shining!" : data?.streakCount > 15 ? "🎉 Amazing work! You're on a roll! You've shown real commitment and self-discipline. Keep up the great work!" : data?.streakCount > 7 ? "👏 Great job! You're building a strong habit! You've shown real commitment and self-discipline. Keep up the good work!" : data?.streakCount > 3 ? "👍 Good job! You're building a habit! You've shown real commitment and self-discipline. Keep up the good work!" : "👀 You're on your way to building a habit! You've shown real commitment and self-discipline. Keep up the good work!"}
+            </blockquote>
             <AnimatePresence>
 
                 {!user ? <motion.div initial={{

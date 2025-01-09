@@ -1,44 +1,37 @@
-'use client';
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
-
-
-
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
 import { baseAxios } from '@/lib/useAxios';
-import { useSession } from 'next-auth/react';
+
 const chartConfig = {
-    focusMinutes: {
-        label: "Focus Minutes",
+    completedSessions: {
+        label: "Completed Session",
         color: "hsl(var(--chart-1))",
     },
 };
 
-
-
-const Barchart = () => {
+const Completed = () => {
     const x = useSession();
     const id = x.data?.user?.id;
     const { data } = useQuery({
-        queryKey: ['barchart', id],
+        queryKey: ['completed', id],
         queryFn: async () => {
-            const response = await baseAxios.get(`/focus/get/${id}`);
+            const response = await baseAxios.get(`/focus/completed/${id}`);
             return response.data?.data || [];
         },
         enabled: !!id,
-        initialData: []
+        initialData: [],
     });
-    console.log(data);
     return (
         <div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Your Focus Minutes on Last 7 Days</CardTitle>
+                    <CardTitle>Your Completed Sessions on Last 7 Days</CardTitle>
                     <CardDescription>{data?.[0]?.date} - {data?.[data?.length - 1]?.date}</CardDescription>
-                    <CardDescription>You Took {data.reduce((pre, cur) => pre + cur.focusMinutes, 0)}  Minutes of Focus Session on Last 7 Days</CardDescription>
+                    <CardDescription>You Completed {data.reduce((pre, cur) => pre + cur.completedSessions, 0)} Session on Last 7 days</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {id && data && <ChartContainer config={chartConfig}>
@@ -51,14 +44,14 @@ const Barchart = () => {
                                 axisLine={false}
                                 tickFormatter={(value) => {
 
-                                    return value.slice(0, 3) + " " + value.split(" ")[1];
+                                    return value.slice(0, 3) + " " + value.split(" ")[1] + " ";
                                 }}
                             />
                             <ChartTooltip
                                 cursor={false}
                                 content={<ChartTooltipContent hideLabel />}
                             />
-                            <Bar dataKey="focusMinutes" fill="var(--color-desktop)" radius={8} />
+                            <Bar dataKey="completedSessions" fill="var(--color-desktop)" radius={8} />
                         </BarChart>
                     </ChartContainer>}
                 </CardContent>
@@ -68,4 +61,4 @@ const Barchart = () => {
     );
 };
 
-export default Barchart;
+export default Completed;

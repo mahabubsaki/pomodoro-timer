@@ -70,7 +70,6 @@ body {
     --chart-5: 340 75% 55%;
   }
 
-
   .normal {
     --background: 224 71.4% 4.1%;
     --wholeBg: 145 91% 60%;
@@ -109,3 +108,7 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* .horizontal .recharts-cartesian-axis-tick {
+  font-size: 0.5rem;
+} */
