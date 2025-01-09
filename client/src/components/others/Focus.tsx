@@ -41,6 +41,7 @@ const Focus = () => {
         },
         enabled: !!id
     });
+    console.log(data);
     const { mutate } = useMutation({
         mutationFn: async (data) => {
 

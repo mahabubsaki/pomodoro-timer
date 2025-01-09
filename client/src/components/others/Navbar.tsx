@@ -5,13 +5,12 @@ import NavList from '../common/NavList';
 import ToolTip from '../common/ToolTip';
 import NAVBAR_ENUMS from '@/configs/enums/navbar';
 import ROOTENUMS from '@/configs/enums';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import { useSession, signOut } from 'next-auth/react';
-import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import Link from 'next/link';
 import { baseAxios } from '@/lib/useAxios';
@@ -21,12 +20,11 @@ import { baseAxios } from '@/lib/useAxios';
 const Navbar = () => {
     const x = useSession();
     const user = x?.data?.user;
-    console.log(x);
     useEffect(() => {
         if (user?.email) {
             (async function xy() {
                 const fullUser = await baseAxios.get(`/auth/getUser?email=${user?.email}`);
-                console.log(fullUser.data, 'in session');
+
                 x.update({ user: { ...user, avatarUrl: fullUser.data.data.avatarUrl, id: fullUser.data.data.id } });
             })();
         }
