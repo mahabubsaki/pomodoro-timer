@@ -1,5 +1,6 @@
 'use client';
 
+import Achievements from '@/components/others/Achievements';
 import Barchart from '@/components/others/BarChart';
 import Completed from '@/components/others/Completed';
 import DailySessionTime from '@/components/others/DailySessionTime';
@@ -23,6 +24,7 @@ const Dashboard = () => {
             <Completed />
             <DailySessionTime />
             <Streak />
+            <Achievements />
         </div>
     );
 };
