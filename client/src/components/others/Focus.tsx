@@ -174,7 +174,7 @@ const Focus = () => {
             </div>
             <div className='flex justify-between items-center mt-4 gap-4'>
                 <div className='flex-1 bg-white/10 p-2 rounded-md text-center'>
-                    Session No : {data?.sessionNo || 0}
+                    Session No : {data?.sessionNo + 1 || 0}
                 </div>
                 <div className='flex-1 bg-white/10 p-2 rounded-md text-center'>
                     Streak : {data?.streakCount || 0}

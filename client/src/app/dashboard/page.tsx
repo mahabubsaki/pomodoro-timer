@@ -23,12 +23,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         setTheme('light');
-        if (!id) {
-            toast('Please Login to Continue');
-            router.push('/');
-        };
-    }, [id]);
-    if (!id) return null;
+
+    }, []);
+    if (!id) return <div>Please Login to Continue</div>;
     if (loading) return <div>Loading...</div>;
     return (
         <div className='flex flex-col gap-10'>
