@@ -226,11 +226,105 @@ const getDailyFocusSession = catchAsync(async (req, res) => {
 
 });
 
+const getAchivementsController = catchAsync(async (req, res) => {
+    const { id: userId } = req.params;
+    console.log(userId, 'id');
+    const achievements = [
+        {
+            title: 'Complete 10 Focused Session',
+            description: 'Successfully completed 10 focused work sessions with minimal distractions.',
+            target: 10,
+        },
+        {
+            title: '100 Minutes of Focused Work',
+            description: 'Achieved 100 minutes of focused work time',
+            target: 100
+        },
+        {
+            title: '50 Focus Session',
+            description: 'Do 50 Session with at least 2 minutes of focus time.',
+            target: 50
+        },
+        {
+            title: 'Consistent 7-Day Streak',
+            description: 'Completed focus sessions consistently for 7 days.',
+            target: 7
+        },
+        {
+            title: '30 Seamless Sessions',
+            description: 'Completed 30 focus sessions without any pause.',
+            target: 30
+        }
+
+    ];
+    const completedSession = await db.focusSession.findMany({
+        where: {
+            userId: userId,
+            completed: true
+        }
+    });
+
+    achievements[0].completed = completedSession.length;
+    achievements[0].percentage = +((completedSession.length / achievements[0].target) * 100).toFixed(2);
+
+    const totalMinutes = await db.focusSession.aggregate({
+        _sum: {
+            duration: true
+        },
+
+        where: {
+            userId: userId
+        }
+    });
+    const duration = +(totalMinutes._sum.duration / 60).toFixed(2);
+    achievements[1].completed = duration;
+    achievements[1].percentage = +((duration / 100) * 100).toFixed(2);
+
+    const sessionWithAtLeast2Minutes = await db.focusSession.findMany({
+        where: {
+            userId: userId,
+            duration: {
+                gte: 2 * 60
+            }
+        }
+    });
+
+    achievements[2].completed = sessionWithAtLeast2Minutes.length;
+    achievements[2].percentage = +((sessionWithAtLeast2Minutes.length / achievements[2].target) * 100).toFixed(2);
+
+    const completedSessions = await db.focusSession.findMany({
+        where: {
+            userId: userId,
+        }
+    });
+    const result = countLongestStreak(completedSessions);
+
+    achievements[3].completed = result.longestStreak;
+    achievements[3].percentage = +((result.longestStreak / achievements[3].target) * 100).toFixed(2);
+
+    const sessionWithNoPause = await db.focusSession.findMany({
+        where: {
+            userId: userId,
+            paused: false,
+            completed: true
+        }
+    });
+
+    achievements[4].completed = sessionWithNoPause.length;
+    achievements[4].percentage = +((sessionWithNoPause.length / achievements[4].target) * 100).toFixed(2);
+
+    console.log(achievements, 'achievements');
+    res.send({ status: true, data: achievements });
+
+
+});
+
 
 module.exports = {
     focusCreateController,
     getSpecificFocusSession,
     getStreakController,
     getCompletedSessionController,
-    getDailyFocusSession
+    getDailyFocusSession,
+    getAchivementsController
 };
