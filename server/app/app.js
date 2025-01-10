@@ -5,16 +5,19 @@ const cors = require('cors');
 const globalErrorHandler = require('./errors/global.error');
 const notFoundErrorHandler = require('./errors/404.error');
 const router = require('./routes');
-const { DateTime } = require('luxon');
-const redisClient = require('./configs/redis.config');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 
 
 //middleare and parser
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 
+app.use(cookieParser());
 app.use(express.json());
 
 

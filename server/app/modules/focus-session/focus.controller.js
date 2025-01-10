@@ -85,6 +85,7 @@ const convert = (data) => {
 };
 
 const getSpecificFocusSession = catchAsync(async (req, res) => {
+
     const { id } = req.params;
     // console.log(id, 'id');
     const cache = await redisClient.get('getSpecificFocusSession' + id);

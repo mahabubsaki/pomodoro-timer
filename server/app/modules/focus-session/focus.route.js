@@ -1,5 +1,6 @@
 const express = require('express');
 const { focusCreateController, getSpecificFocusSession, getStreakController, getCompletedSessionController, getDailyFocusSession, getAchivementsController } = require('./focus.controller');
+const verifyJwt = require('../../middlewares/verifyJwt');
 const focusRouter = express.Router();
 
 focusRouter.post('/create', focusCreateController);
