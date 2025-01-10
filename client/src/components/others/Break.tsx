@@ -14,7 +14,7 @@ import { useSession } from 'next-auth/react';
 
 
 const Break = () => {
-    const [time, setTime] = useState(1 * 10);
+    const [time, setTime] = useState(5 * 60);
     const session = useSession();
     const user = session.data?.user;
     const [isRunning, setIsRunning] = useState(false);
