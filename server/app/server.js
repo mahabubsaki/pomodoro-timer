@@ -2,6 +2,7 @@
 const envConfigs = require('./configs/env.config');
 const app = require('./app');
 const db = require('./configs/db.config');
+const redisClient = require('./configs/redis.config');
 
 
 
@@ -14,8 +15,10 @@ async function bootstrap() {
     try {
 
         app.listen(envConfigs.port, async () => {
-            console.log(`Listening to ${envConfigs.port}`);
+
             await db.$connect();
+            await redisClient.connect();
+            console.log(`Listening to ${envConfigs.port}`);
             console.log('Connected to db');
         });
 

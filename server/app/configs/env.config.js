@@ -7,6 +7,7 @@ const envConfigs = {
     // dbUri: process.env.MONGODB_URI,
     port: process.env.BACKEND_PORT || 5000,
     jwtSecret: process.env.JWT_SECRET,
+    redisUrl: process.env.REDIS_URL,
 
     // jwtSecret: process.env.JWT_SECRET,
     // redisUri: process.env.NODE_ENV ? process.env.REDIS_URL : process.env.REDIS_URL_LOCAL,
