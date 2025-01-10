@@ -17,7 +17,10 @@ async function bootstrap() {
         app.listen(envConfigs.port, async () => {
 
             await db.$connect();
-            await redisClient.connect();
+
+            if (!redisClient.isOpen) {
+                await redisClient.connect();
+            }
             console.log(`Listening to ${envConfigs.port}`);
             console.log('Connected to db');
         });

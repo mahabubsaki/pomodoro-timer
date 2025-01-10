@@ -4,7 +4,7 @@
 const { PrismaClient } = require('@prisma/client');
 
 const db = new PrismaClient({
-    log: ['query']
+    // log: ['query']
 });
 
 

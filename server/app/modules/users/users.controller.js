@@ -35,7 +35,7 @@ const loginController = catchAsync(async (req, res) => {
     const password = req.body.password;
     const cache = await redisClient.get('login' + email);
     let user;
-    console.log(cache, 'cache');
+    // console.log(cache, 'cache');
     if (cache) {
         user = JSON.parse(cache);
     } else {

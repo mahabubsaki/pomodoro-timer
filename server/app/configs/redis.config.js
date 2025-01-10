@@ -7,8 +7,11 @@ const envConfigs = require("./env.config");
 
 
 const redisClient = createClient({
-    url: envConfigs.redisUrl
+    url: envConfigs.redisUrl,
+
 });
+
+
 
 
 redisClient.on('error', (err) => {

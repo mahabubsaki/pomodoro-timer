@@ -6,6 +6,7 @@ const globalErrorHandler = require('./errors/global.error');
 const notFoundErrorHandler = require('./errors/404.error');
 const router = require('./routes');
 const { DateTime } = require('luxon');
+const redisClient = require('./configs/redis.config');
 
 const app = express();
 
