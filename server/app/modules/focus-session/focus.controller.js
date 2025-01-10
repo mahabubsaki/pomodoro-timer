@@ -275,7 +275,7 @@ const getCompletedSessionController = catchAsync(async (req, res) => {
 
 function getHourlyData(data) {
     const hourlyData = Array(24).fill(0);
-
+    // console.log(new Date(entry.timestamp), 'entry.timestamp');
     data.forEach(entry => {
         const hour = new Date(entry.timestamp).getUTCHours();
         hourlyData[hour] += entry.duration;
@@ -304,7 +304,10 @@ function getHourlyData(data) {
 
 const getDailyFocusSession = catchAsync(async (req, res) => {
     const { id: userId } = req.params;
-    const cache = await redisClient.get('getDailyFocusSession' + userId + req.query.time.split('T')[0]);
+    const time = new Date(req.query.time);
+    time.setHours(time.getHours() + 6);
+
+    const cache = await redisClient.get('getDailyFocusSession' + userId + time.toISOString().split('T')[0]);
     let result;
     if (cache) {
         // console.log('from cache, getDailyFocusSession');
@@ -321,7 +324,9 @@ const getDailyFocusSession = catchAsync(async (req, res) => {
 
         end.setHours(end.getHours() + 6);
 
-        // console.log(start, end, 'start end');
+
+
+        console.log(start, end, 'start end');
 
 
 
@@ -336,13 +341,14 @@ const getDailyFocusSession = catchAsync(async (req, res) => {
             },
 
         });
+        console.log(completedSession, 'completedSession');
         // console.log(DateTime.fromJSDate(time).setZone('Asia/Dhaka').toJSDate());
 
 
         // console.log(completedSession, 'completedSession');
         result = getHourlyData(completedSession);
     }
-    await redisClient.set('getDailyFocusSession' + userId + req.query.time.split('T')[0], JSON.stringify(result), {
+    await redisClient.set('getDailyFocusSession' + userId + time.toISOString().split('T')[0], JSON.stringify(result), {
         EX: 3600
     });
     res.send({ status: true, data: result });

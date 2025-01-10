@@ -6,7 +6,9 @@ const globalErrorHandler = require('./errors/global.error');
 const notFoundErrorHandler = require('./errors/404.error');
 const router = require('./routes');
 const cookieParser = require('cookie-parser');
-
+const promClient = require('prom-client');
+const promSetup = require('./middlewares/promSetup');
+const { register } = require('./configs/prom.config');
 const app = express();
 
 
@@ -19,10 +21,16 @@ app.use(cors({
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(promSetup);
 
 
 //Application routes
 app.use("/api/v1", router);
+
+app.get('/metrics', async (req, res) => {
+    res.setHeader('Content-Type', register.contentType);
+    res.send(await register.metrics());
+});
 
 
 //testing route
