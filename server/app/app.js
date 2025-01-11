@@ -10,13 +10,14 @@ const promClient = require('prom-client');
 const promSetup = require('./middlewares/promSetup');
 const { register } = require('./configs/prom.config');
 const logger = require('./configs/pino.config');
+const db = require('./configs/db.config');
 const app = express();
 
 
 
 //middleare and parser
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://client-alpha-one-62.vercel.app'],
     credentials: true
 }));
 
@@ -35,9 +36,10 @@ app.get('/metrics', async (req, res) => {
 
 
 //testing route
-app.get('/', (_, res) => {
-    // logger.info({ msg: 'User successfully logged in', meta: { username: 'JohnDoe' } });
-    res.send({ status: true, message: 'server runinng perfectly' });
+app.get('/', async (_, res) => {
+
+
+    res.send({ status: true, message: 'server runinng perfectly', data });
 });
 
 

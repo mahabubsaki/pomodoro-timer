@@ -7,6 +7,7 @@ const redisClient = require("../../configs/redis.config");
 
 const registerController = catchAsync(async (req, res) => {
     const { name, email, password, avatarUrl } = req.body;
+    console.log(req.body);
 
     const existingUser = await db.user.findUnique({
         where: {
@@ -33,12 +34,14 @@ const registerController = catchAsync(async (req, res) => {
 const loginController = catchAsync(async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+
     const cache = await redisClient.get('login' + email);
     let user;
     // console.log(cache, 'cache');
     if (cache) {
         user = JSON.parse(cache);
     } else {
+
         user = await db.user.findUnique({
             where: {
                 email

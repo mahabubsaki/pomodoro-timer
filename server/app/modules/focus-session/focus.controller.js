@@ -21,7 +21,7 @@ const focusCreateController = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with pg create ', 500));
+        new CustomError(e.message || 'Something went wrong with pg create ', 500);
     }
 
     try {
@@ -29,7 +29,7 @@ const focusCreateController = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data delete', 500));
+        new CustomError(e.message || 'Something went wrong with redis data delete', 500);
     }
     // console.log('cleard cache');
 
@@ -108,7 +108,7 @@ const getSpecificFocusSession = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+        new CustomError(e.message || 'Something went wrong with redis data get', 500);
     }
     let result;
     if (cache) {
@@ -125,7 +125,7 @@ const getSpecificFocusSession = catchAsync(async (req, res) => {
         }
         catch (e) {
             res.statusCode = 500;
-            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+            new CustomError(e.message || 'Something went wrong with pg query ', 500);
         }
         // console.log(all, 'result');
     }
@@ -138,7 +138,7 @@ const getSpecificFocusSession = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+        new CustomError(e.message || 'Something went wrong with redis data set', 500);
     }
     res.send({ status: true, data: result });
 });
@@ -222,7 +222,7 @@ const getStreakController = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+        new CustomError(e.message || 'Something went wrong with redis data get', 500);
     }
     // console.log({ cache }, 'cache in getStreakController');
     let result;
@@ -254,7 +254,7 @@ const getStreakController = catchAsync(async (req, res) => {
         }
         catch (e) {
             res.statusCode = 500;
-            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+            new CustomError(e.message || 'Something went wrong with pg query ', 500);
         }
     }
     try {
@@ -265,7 +265,7 @@ const getStreakController = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+        new CustomError(e.message || 'Something went wrong with redis data set', 500);
     }
     // console.log(result, 'result');
     res.send({ status: true, data: result });
@@ -306,7 +306,7 @@ const getCompletedSessionController = catchAsync(async (req, res) => {
         cache = await redisClient.get('getCompletedSessionController' + userId);
     } catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+        new CustomError(e.message || 'Something went wrong with redis data get', 500);
     }
     let result;
     if (cache) {
@@ -326,7 +326,7 @@ const getCompletedSessionController = catchAsync(async (req, res) => {
         }
         catch (e) {
             res.statusCode = 500;
-            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+            new CustomError(e.message || 'Something went wrong with pg query ', 500);
         }
     }
 
@@ -337,7 +337,7 @@ const getCompletedSessionController = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+        new CustomError(e.message || 'Something went wrong with redis data set', 500);
     }
     res.send({ status: true, data: result });
 
@@ -384,7 +384,7 @@ const getDailyFocusSession = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+        new CustomError(e.message || 'Something went wrong with redis data get', 500);
     }
     let result;
     if (cache) {
@@ -423,7 +423,7 @@ const getDailyFocusSession = catchAsync(async (req, res) => {
             result = getHourlyData(completedSession);
         } catch (e) {
             res.statusCode = 500;
-            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+            new CustomError(e.message || 'Something went wrong with pg query ', 500);
         }
 
         // console.log(DateTime.fromJSDate(time).setZone('Asia/Dhaka').toJSDate());
@@ -440,7 +440,7 @@ const getDailyFocusSession = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+        new CustomError(e.message || 'Something went wrong with redis data set', 500);
     }
 
 
@@ -481,7 +481,7 @@ const getAchivementsController = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+        new CustomError(e.message || 'Something went wrong with redis data get', 500);
     }
     let result;
     if (cache) {
@@ -549,7 +549,7 @@ const getAchivementsController = catchAsync(async (req, res) => {
         }
         catch (e) {
             res.statusCode = 500;
-            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+            new CustomError(e.message || 'Something went wrong with pg query ', 500);
         }
     }
 
@@ -562,7 +562,7 @@ const getAchivementsController = catchAsync(async (req, res) => {
     }
     catch (e) {
         res.statusCode = 500;
-        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+        new CustomError(e.message || 'Something went wrong with redis data set', 500);
     }
 
 
