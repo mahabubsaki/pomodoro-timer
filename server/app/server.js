@@ -18,14 +18,13 @@ process.on("uncaughtException", (error) => {
 async function bootstrap() {
 
     try {
+        await db.$connect();
 
+
+        await redisClient.connect();
         app.listen(envConfigs.port, async () => {
 
-            await db.$connect();
 
-            if (!redisClient.isOpen) {
-                await redisClient.connect();
-            }
             console.log(`Listening to ${envConfigs.port}`);
             console.log('Connected to db');
         });

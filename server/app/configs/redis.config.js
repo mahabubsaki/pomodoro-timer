@@ -4,11 +4,11 @@ const logger = require("./pino.config");
 
 
 
-
+console.log(envConfigs.redisUri);
 
 
 const redisClient = createClient({
-    url: envConfigs.redisUrl,
+    url: envConfigs.redisUri,
 
 });
 

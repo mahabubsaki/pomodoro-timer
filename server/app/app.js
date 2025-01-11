@@ -11,6 +11,7 @@ const promSetup = require('./middlewares/promSetup');
 const { register } = require('./configs/prom.config');
 const logger = require('./configs/pino.config');
 const db = require('./configs/db.config');
+const redisClient = require('./configs/redis.config');
 const app = express();
 
 
@@ -39,7 +40,7 @@ app.get('/metrics', async (req, res) => {
 app.get('/', async (_, res) => {
 
 
-    res.send({ status: true, message: 'server runinng perfectly', data });
+    res.send({ status: true, message: 'server runinng perfectly', data: await redisClient.KEYS('*') });
 });
 
 
