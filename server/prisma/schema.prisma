@@ -20,7 +20,6 @@ model User {
   password      String
   avatarUrl     String
   focusSessions FocusSession[]
-  breakSessions BreakSession[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -35,20 +34,10 @@ model FocusSession {
   user      User     @relation(fields: [userId], references: [id])
 }
 
-model BreakSession {
-  id        String   @id @default(uuid())
-  userId    String
-  duration  Int
-  paused    Boolean
-  completed Boolean
-  timestamp DateTime
-  user      User     @relation(fields: [userId], references: [id])
-}
-
-model Badges {
-  id             String @id @default(uuid())
-  name           String
-  icon           String
-  description    String
-  progressNeeded Int
+model LogTrack {
+  id        Int      @id @default(autoincrement())
+  level     String
+  message   String
+  meta      Json
+  timestamp DateTime @default(now())
 }

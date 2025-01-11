@@ -2,6 +2,7 @@ const db = require("../../configs/db.config");
 const redisClient = require("../../configs/redis.config");
 const catchAsync = require("../../errors/catch-async.error");
 const { DateTime } = require('luxon');
+const CustomError = require("../../errors/custom.error");
 
 
 
@@ -10,13 +11,25 @@ const focusCreateController = catchAsync(async (req, res) => {
 
     const { completed, paused, duration, userId } = req.body;
 
-    await db.focusSession.create({
-        data: {
-            completed, paused, duration, userId, timestamp: DateTime.now().plus({ hours: 6 }).toJSDate()
-        }
-    });
+    try {
+        await db.focusSession.create({
+            data: {
+                completed, paused, duration, userId, timestamp: DateTime.now().plus({ hours: 6 }).toJSDate()
+            }
+        });
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with pg create ', 500));
+    }
 
-    await redisClient.multi().DEL('getSpecificFocusSession' + userId).DEL('getStreakController' + userId).DEL('getCompletedSessionController' + userId).DEL('getAchivementsController' + userId).DEL('getDailyFocusSession' + userId + DateTime.now().plus({ hours: 6 }).toJSDate().toISOString().split('T')[0]).exec();
+    try {
+        await redisClient.multi().DEL('getSpecificFocusSession' + userId).DEL('getStreakController' + userId).DEL('getCompletedSessionController' + userId).DEL('getAchivementsController' + userId).DEL('getDailyFocusSession' + userId + DateTime.now().plus({ hours: 6 }).toJSDate().toISOString().split('T')[0]).exec();
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data delete', 500));
+    }
     // console.log('cleard cache');
 
     // console.log(x);
@@ -88,25 +101,44 @@ const getSpecificFocusSession = catchAsync(async (req, res) => {
 
     const { id } = req.params;
     // console.log(id, 'id');
-    const cache = await redisClient.get('getSpecificFocusSession' + id);
+    let cache;
+    try {
+        cache = await redisClient.get('getSpecificFocusSession' + id);
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+    }
     let result;
     if (cache) {
         // console.log('from cache, getSpecificFocusSession');
         result = JSON.parse(cache);
     } else {
-        const all = await db.focusSession.findMany({
-            where: {
-                userId: id
-            }
-        });
-        result = convert(all);
+        try {
+            const all = await db.focusSession.findMany({
+                where: {
+                    userId: id
+                }
+            });
+            result = convert(all);
+        }
+        catch (e) {
+            res.statusCode = 500;
+            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+        }
         // console.log(all, 'result');
     }
     ;
 
-    await redisClient.set('getSpecificFocusSession' + id, JSON.stringify(result), {
-        EX: 3600
-    });
+    try {
+        await redisClient.set('getSpecificFocusSession' + id, JSON.stringify(result), {
+            EX: 3600
+        });
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+    }
     res.send({ status: true, data: result });
 });
 
@@ -182,7 +214,15 @@ const countLongestStreak = (sessions) => {
 
 const getStreakController = catchAsync(async (req, res) => {
     const { id: userId } = req.params;
-    const cache = await redisClient.get('getStreakController' + userId);
+    let cache;
+
+    try {
+        cache = await redisClient.get('getStreakController' + userId);
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+    }
     // console.log({ cache }, 'cache in getStreakController');
     let result;
     if (cache) {
@@ -190,30 +230,42 @@ const getStreakController = catchAsync(async (req, res) => {
         result = JSON.parse(cache);
     } else {
 
-        const sessions = await db.focusSession.findMany({
-            where: {
-                userId: userId,
-            },
-            orderBy: {
-                timestamp: 'asc'
-            }
-        });
-        // console.log(DateTime.now().startOf('day').plus({ hours: 6 }).toJSDate(), 's');
-        const completedSessions = await db.focusSession.findMany({
-            where: {
-                userId: userId
-            }
-        });
-        // console.log(completedSessions, 'completedSessions');
-        result = countStreak(sessions);
-        const longestStreak = countLongestStreak(completedSessions);
-        result.sessionNo = completedSessions.length + 1;
-        result.longestStreak = longestStreak.longestStreak;
+        try {
+            const sessions = await db.focusSession.findMany({
+                where: {
+                    userId: userId,
+                },
+                orderBy: {
+                    timestamp: 'asc'
+                }
+            });
+            // console.log(DateTime.now().startOf('day').plus({ hours: 6 }).toJSDate(), 's');
+            const completedSessions = await db.focusSession.findMany({
+                where: {
+                    userId: userId
+                }
+            });
+            // console.log(completedSessions, 'completedSessions');
+            result = countStreak(sessions);
+            const longestStreak = countLongestStreak(completedSessions);
+            result.sessionNo = completedSessions.length;
+            result.longestStreak = longestStreak.longestStreak;
+        }
+        catch (e) {
+            res.statusCode = 500;
+            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+        }
     }
+    try {
 
-    await redisClient.set('getStreakController' + userId, JSON.stringify(result), {
-        EX: 3600
-    });
+        await redisClient.set('getStreakController' + userId, JSON.stringify(result), {
+            EX: 3600
+        });
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+    }
     // console.log(result, 'result');
     res.send({ status: true, data: result });
 });
@@ -248,26 +300,44 @@ function countCompletedSessions(data) {
 const getCompletedSessionController = catchAsync(async (req, res) => {
     const { id: userId } = req.params;
     // console.log(userId, 'id');
-    const cache = await redisClient.get('getCompletedSessionController' + userId);
+    let cache;
+    try {
+        cache = await redisClient.get('getCompletedSessionController' + userId);
+    } catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+    }
     let result;
     if (cache) {
         // console.log('from cache, getCompletedSessionController');
         result = JSON.parse(cache);
     }
     else {
-        const completedSession = await db.focusSession.findMany({
-            where: {
-                userId: userId,
-                completed: true
-            },
+        try {
+            const completedSession = await db.focusSession.findMany({
+                where: {
+                    userId: userId,
+                    completed: true
+                },
 
-        });
-        result = countCompletedSessions(completedSession);
+            });
+            result = countCompletedSessions(completedSession);
+        }
+        catch (e) {
+            res.statusCode = 500;
+            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+        }
     }
 
-    await redisClient.set('getCompletedSessionController' + userId, JSON.stringify(result), {
-        EX: 3600
-    });
+    try {
+        await redisClient.set('getCompletedSessionController' + userId, JSON.stringify(result), {
+            EX: 3600
+        });
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+    }
     res.send({ status: true, data: result });
 
 
@@ -307,7 +377,14 @@ const getDailyFocusSession = catchAsync(async (req, res) => {
     const time = new Date(req.query.time);
     time.setHours(time.getHours() + 6);
 
-    const cache = await redisClient.get('getDailyFocusSession' + userId + time.toISOString().split('T')[0]);
+    let cache;
+    try {
+        cache = await redisClient.get('getDailyFocusSession' + userId + time.toISOString().split('T')[0]);
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+    }
     let result;
     if (cache) {
         // console.log('from cache, getDailyFocusSession');
@@ -331,27 +408,40 @@ const getDailyFocusSession = catchAsync(async (req, res) => {
 
 
 
-        const completedSession = await db.focusSession.findMany({
-            where: {
-                userId: userId,
-                timestamp: {
-                    gte: start,
-                    lte: end
-                }
-            },
+        try {
+            const completedSession = await db.focusSession.findMany({
+                where: {
+                    userId: userId,
+                    timestamp: {
+                        gte: start,
+                        lte: end
+                    }
+                },
 
-        });
-        console.log(completedSession, 'completedSession');
+            });
+            result = getHourlyData(completedSession);
+        } catch (e) {
+            res.statusCode = 500;
+            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+        }
+
         // console.log(DateTime.fromJSDate(time).setZone('Asia/Dhaka').toJSDate());
 
 
         // console.log(completedSession, 'completedSession');
-        result = getHourlyData(completedSession);
+
     }
-    await redisClient.set('getDailyFocusSession' + userId + time.toISOString().split('T')[0], JSON.stringify(result), {
-        EX: 3600
-    });
-    res.send({ status: true, data: result });
+    try {
+        await redisClient.set('getDailyFocusSession' + userId + time.toISOString().split('T')[0], JSON.stringify(result), {
+            EX: 3600
+        });
+        res.send({ status: true, data: result });
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+    }
+
 
 });
 const achievements = [
@@ -384,77 +474,95 @@ const achievements = [
 ];
 const getAchivementsController = catchAsync(async (req, res) => {
     const { id: userId } = req.params;
-
-    const cache = await redisClient.get('getAchivementsController' + userId);
+    let cache;
+    try {
+        cache = await redisClient.get('getAchivementsController' + userId);
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data get', 500));
+    }
     let result;
     if (cache) {
         // console.log('from cache, getAchivementsController');
         result = JSON.parse(cache);
     } else {
 
-        const completedSession = await db.focusSession.findMany({
-            where: {
-                userId: userId,
-                completed: true
-            }
-        });
-
-        achievements[0].completed = completedSession.length;
-        achievements[0].percentage = +((completedSession.length / achievements[0].target) * 100).toFixed(2);
-
-        const totalMinutes = await db.focusSession.aggregate({
-            _sum: {
-                duration: true
-            },
-
-            where: {
-                userId: userId
-            }
-        });
-        const duration = +(totalMinutes._sum.duration / 60).toFixed(2);
-        achievements[1].completed = duration;
-        achievements[1].percentage = +((duration / 100) * 100).toFixed(2);
-
-        const sessionWithAtLeast2Minutes = await db.focusSession.findMany({
-            where: {
-                userId: userId,
-                duration: {
-                    gte: 2 * 60
+        try {
+            const completedSession = await db.focusSession.findMany({
+                where: {
+                    userId: userId,
+                    completed: true
                 }
-            }
-        });
+            });
 
-        achievements[2].completed = sessionWithAtLeast2Minutes.length;
-        achievements[2].percentage = +((sessionWithAtLeast2Minutes.length / achievements[2].target) * 100).toFixed(2);
+            achievements[0].completed = completedSession.length;
+            achievements[0].percentage = +((completedSession.length / achievements[0].target) * 100).toFixed(2);
 
-        const completedSessions = await db.focusSession.findMany({
-            where: {
-                userId: userId,
-            }
-        });
-        const streak = countLongestStreak(completedSessions);
+            const totalMinutes = await db.focusSession.aggregate({
+                _sum: {
+                    duration: true
+                },
 
-        achievements[3].completed = streak.longestStreak;
-        achievements[3].percentage = +((streak.longestStreak / achievements[3].target) * 100).toFixed(2);
+                where: {
+                    userId: userId
+                }
+            });
+            const duration = +(totalMinutes._sum.duration / 60).toFixed(2);
+            achievements[1].completed = duration;
+            achievements[1].percentage = +((duration / 100) * 100).toFixed(2);
 
-        const sessionWithNoPause = await db.focusSession.findMany({
-            where: {
-                userId: userId,
-                paused: false,
-                completed: true
-            }
-        });
+            const sessionWithAtLeast2Minutes = await db.focusSession.findMany({
+                where: {
+                    userId: userId,
+                    duration: {
+                        gte: 2 * 60
+                    }
+                }
+            });
 
-        achievements[4].completed = sessionWithNoPause.length;
-        achievements[4].percentage = +((sessionWithNoPause.length / achievements[4].target) * 100).toFixed(2);
-        result = achievements;
+            achievements[2].completed = sessionWithAtLeast2Minutes.length;
+            achievements[2].percentage = +((sessionWithAtLeast2Minutes.length / achievements[2].target) * 100).toFixed(2);
+
+            const completedSessions = await db.focusSession.findMany({
+                where: {
+                    userId: userId,
+                }
+            });
+            const streak = countLongestStreak(completedSessions);
+
+            achievements[3].completed = streak.longestStreak;
+            achievements[3].percentage = +((streak.longestStreak / achievements[3].target) * 100).toFixed(2);
+
+            const sessionWithNoPause = await db.focusSession.findMany({
+                where: {
+                    userId: userId,
+                    paused: false,
+                    completed: true
+                }
+            });
+
+            achievements[4].completed = sessionWithNoPause.length;
+            achievements[4].percentage = +((sessionWithNoPause.length / achievements[4].target) * 100).toFixed(2);
+            result = achievements;
+        }
+        catch (e) {
+            res.statusCode = 500;
+            next(new CustomError(e.message || 'Something went wrong with pg query ', 500));
+        }
     }
 
 
-    await redisClient.set('getAchivementsController' + userId, JSON.stringify(result), {
-        EX: 3600
-    });
+    try {
+        await redisClient.set('getAchivementsController' + userId, JSON.stringify(result), {
+            EX: 3600
+        });
 
+    }
+    catch (e) {
+        res.statusCode = 500;
+        next(new CustomError(e.message || 'Something went wrong with redis data set', 500));
+    }
 
 
 

@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const promClient = require('prom-client');
 const promSetup = require('./middlewares/promSetup');
 const { register } = require('./configs/prom.config');
+const logger = require('./configs/pino.config');
 const app = express();
 
 

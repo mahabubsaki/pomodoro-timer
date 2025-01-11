@@ -1,9 +1,10 @@
 const httpStatus = require('http-status');
 const handleCustomErrors = require('./funcs/handleCustomErrors');
+const logger = require('../configs/pino.config');
 
 
 const globalErrorHandler = (err, _, res, __) => {
-
+    ;
     const responseObj = {
         statusCode: res.statusCode || 500,
         message: httpStatus[res.statusCode || '500'],
@@ -18,6 +19,11 @@ const globalErrorHandler = (err, _, res, __) => {
         responseObj.statusCode = statusCode;
         responseObj.message = httpStatus[statusCode];
     }
+    // console.log(responseObj, 'responseObj');
+    logger.error({
+        msg: 'Error in global error handler',
+        meta: responseObj
+    });
     return res.status(responseObj.statusCode).json(responseObj);
 
 };
