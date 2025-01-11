@@ -3,9 +3,15 @@
 
 const { PrismaClient } = require('@prisma/client');
 
-const db = new PrismaClient({
-    // log: ['query']
-});
+const db = globalThis.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV === 'development') {
+    globalThis.prisma = db;
+}
+
+
+
+
 
 
 module.exports = db;

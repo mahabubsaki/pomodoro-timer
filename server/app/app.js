@@ -36,7 +36,7 @@ app.get('/metrics', async (req, res) => {
 
 //testing route
 app.get('/', (_, res) => {
-
+    // logger.info({ msg: 'User successfully logged in', meta: { username: 'JohnDoe' } });
     res.send({ status: true, message: 'server runinng perfectly' });
 });
 

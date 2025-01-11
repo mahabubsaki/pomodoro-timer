@@ -7,6 +7,7 @@ const CustomError = require("../../errors/custom.error");
 
 
 
+
 const focusCreateController = catchAsync(async (req, res) => {
 
     const { completed, paused, duration, userId } = req.body;
