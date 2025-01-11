@@ -18,7 +18,7 @@ COPY . .
 
 # Expose port and start application
 
-EXPOSE 5001
+EXPOSE 5000
 
 # Start the application
 
