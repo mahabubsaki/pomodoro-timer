@@ -3,17 +3,26 @@ import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import { Progress } from '../ui/progress';
+import { MockObjectWithId } from '@/app/dashboard/page';
+
+interface Achievement {
+    title: string;
+    description: string;
+    percentage: number;
+    completed: number;
+    target: number;
+}
 
 const Achievements = () => {
     const session = useSession();
-    const id = session.data?.user?.id;
+    const id = (session.data?.user as MockObjectWithId)?.id;
 
     const { data: achievements } = useQuery({
         queryKey: ['achievements', id],
         enabled: !!id,
         queryFn: async () => {
             const response = await baseAxios.get(`/focus/achievements/${id}`);
-            return response.data?.data || [];
+            return (response.data?.data as Achievement[]) || [];
         },
         initialData: [],
     });

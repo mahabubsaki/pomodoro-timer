@@ -5,6 +5,7 @@ import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
 import { baseAxios } from '@/lib/useAxios';
+import { MockObjectWithId } from '@/app/dashboard/page';
 
 const chartConfig = {
     completedSessions: {
@@ -13,14 +14,20 @@ const chartConfig = {
     },
 };
 
+interface FocusCompleteData {
+    date: string;
+    completedSessions: number;
+}
+
 const Completed = () => {
     const x = useSession();
-    const id = x.data?.user?.id;
+    const id = (x.data?.user as MockObjectWithId)?.id;
     const { data } = useQuery({
         queryKey: ['completed', id],
         queryFn: async () => {
             const response = await baseAxios.get(`/focus/completed/${id}`);
-            return response.data?.data || [];
+            console.log(response.data?.data);
+            return (response.data?.data as FocusCompleteData[]) || [];
         },
         enabled: !!id,
         initialData: [],

@@ -12,8 +12,17 @@ import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { baseAxios } from '@/lib/useAxios';
+import { MockObjectWithId } from '@/app/dashboard/page';
 
 
+
+
+interface FocusSession {
+    userId: string;
+    completed: boolean;
+    duration: number;
+    paused: boolean;
+}
 const Focus = () => {
     const [time, setTime] = useState(25 * 60);
     const [isRunning, setIsRunning] = useState(false);
@@ -32,7 +41,7 @@ const Focus = () => {
     const { setTheme } = useTheme();
 
 
-    const id = session.data?.user?.id;
+    const id = (session.data?.user as MockObjectWithId)?.id;
     const { data, refetch } = useQuery({
         queryKey: ['streak', id],
         queryFn: async () => {
@@ -43,7 +52,7 @@ const Focus = () => {
     });
     console.log(data);
     const { mutate } = useMutation({
-        mutationFn: async (data) => {
+        mutationFn: async (data: FocusSession) => {
 
             return await baseAxios.post('/focus/create', data);
         },
@@ -72,7 +81,7 @@ const Focus = () => {
                         setPaused(false);
                         setIsRunning(false);
                         mutate({
-                            userId: user.id,
+                            userId: (user as MockObjectWithId)?.id,
                             completed: true,
                             duration: 25 * 60,
                             paused
@@ -99,7 +108,7 @@ const Focus = () => {
         setPaused(false);
         setIsRunning(false);
         mutate({
-            userId: user.id,
+            userId: (user as MockObjectWithId)?.id,
             completed: false,
             duration: 25 * 60 - time,
             paused,
@@ -196,7 +205,7 @@ const Focus = () => {
                 }} className='absolute inset-0 bg-white/10 backdrop-blur z-30 rounded-md flex justify-center items-center flex-col gap-4'>
                     <LockIcon size={100} />
                     <p className='text-2xl'>Login to Use this feature</p>
-                </motion.div> : !user?.id ? <motion.div initial={{
+                </motion.div> : !(user as MockObjectWithId)?.id ? <motion.div initial={{
                     opacity: 0
                 }} animate={{
                     opacity: 1

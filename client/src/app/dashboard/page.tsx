@@ -7,26 +7,30 @@ import DailySessionTime from '@/components/others/DailySessionTime';
 import Streak from '@/components/others/Streak';
 import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
-import { useRouter } from 'next/navigation';
+
 
 import React, { useEffect } from 'react';
-import { toast } from 'sonner';
 
+export interface MockObjectWithId {
+    id: string;
+}
 
 const Dashboard = () => {
 
     const { setTheme } = useTheme();
-    const id = useSession().data?.user?.id;
+    const id = ((useSession().data?.user) as MockObjectWithId)?.id;
+    const autehnticated = useSession().status === 'authenticated';
     const loading = useSession().status === 'loading';
-    const router = useRouter();
+
 
 
     useEffect(() => {
         setTheme('light');
 
-    }, []);
+
+    }, [id]);
     if (!id) return <div>Please Login to Continue</div>;
-    if (loading) return <div>Loading...</div>;
+    if (loading || (!id && autehnticated)) return <div>Loading...</div>;
     return (
         <div className='flex flex-col gap-10'>
             <Barchart />

@@ -11,6 +11,7 @@ import { Calendar } from '../ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
+import { MockObjectWithId } from '@/app/dashboard/page';
 
 const chartConfig = {
     value: {
@@ -21,7 +22,7 @@ const chartConfig = {
 
 const DailySessionTime = () => {
     const x = useSession();
-    const id = x.data?.user?.id;
+    const id = (x.data?.user as MockObjectWithId)?.id;
     const [date, setDate] = React.useState(new Date());
     const { data } = useQuery({
         queryKey: ['daily', id, date],
@@ -54,7 +55,9 @@ const DailySessionTime = () => {
                     <Calendar
                         mode="single"
                         selected={date}
-                        onSelect={setDate}
+                        onSelect={(day) => {
+                            setDate(day as Date);
+                        }}
                         initialFocus
                         toDate={new Date()}
                     />

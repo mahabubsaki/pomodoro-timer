@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AspectRatio } from '../ui/aspect-ratio';
 
 import { CircleCheck, LockIcon, Pause, Play, RotateCcw } from 'lucide-react';
@@ -132,7 +132,7 @@ const Break = () => {
                 </AspectRatio>
             </div>
 
-            <blockquote className='mt-4 text-sm md:text-lg font-semibold text-center italic'>"Take a break, refresh your mind and start again with full energy."</blockquote>
+            <blockquote className='mt-4 text-sm md:text-lg font-semibold text-center italic'>Take a break, refresh your mind and start again with full energy.</blockquote>
             <AnimatePresence>
 
                 {!user && <motion.div initial={{

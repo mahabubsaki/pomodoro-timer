@@ -1,15 +1,27 @@
+import { MockObjectWithId } from '@/app/dashboard/page';
 import { baseAxios } from '@/lib/useAxios';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 
+interface UserStreak {
+    streakCount: number;
+    sessionNo: number;
+    longestStreak: number;
+}
+
+
 const Streak = () => {
     const queryClient = useQueryClient();
     const session = useSession();
 
-    const id = session.data?.user?.id;
+    const id = (session.data?.user as MockObjectWithId)?.id;
 
-    const [data, setData] = useState({});
+    const [data, setData] = useState({
+        streakCount: 0,
+        sessionNo: 0,
+        longestStreak: 0,
+    });
 
     useEffect(() => {
         if (!id) return;
@@ -20,11 +32,12 @@ const Streak = () => {
                     const data = queryClient.getQueryData(['streak', id]);
                     if (data) return data;
                     const response = await baseAxios.get(`/focus/streak/${id}`);
+                    console.log(response.data?.data);
                     return response.data?.data || {};
                 },
 
             });
-            setData(data);
+            setData(data as UserStreak);
         })();
     }, [id]);
     return (
