@@ -5,28 +5,40 @@ import { Button } from '../ui/button';
 
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axios from 'axios';
-import useAxios from '@/lib/useAxios';
-const apiKey = '28f7e689e78cbdf683b41d414ebda692';
+import axios, { AxiosError } from 'axios';
+import { baseAxios } from '@/lib/useAxios';
+const apiKey = process.env.IMGBB_API_KEY;
+interface Message {
+    message: string;
+    errors: {
+        msg: string;
+    }[];
+}
+interface SignUp {
+    name: string;
+    email: string;
+    password: string;
+    file: File;
+}
 const SignUp = () => {
     const formRef = useRef<HTMLFormElement>(null);
-    const axiosCustom = useAxios();
-    const { mutate, isPending } = useMutation({
-        mutationFn: async (data: any) => {
+
+    const { mutate } = useMutation({
+        mutationFn: async (data: SignUp) => {
             const formData = new FormData();
             const { file, ...rest } = data;
             formData.append('image', file);
             const imgbb = await axios.post(`https://api.imgbb.com/1/upload?key=${apiKey}`, formData);
             const imgUrl = imgbb?.data?.data?.url;
-            const user = await axiosCustom.post('/auth/register', {
+            const user = await baseAxios.post('/auth/register', {
                 ...rest,
                 avatarUrl: imgUrl
             });
             return user.data;
         },
-        onError: (error) => {
-            console.log(error?.response?.data?.message);
-            toast.error(error?.response?.data?.errors?.[0]?.msg || error?.response?.data?.message || 'An error occurred');
+        onError: (error: AxiosError) => {
+            console.log((error?.response?.data as Message)?.message);
+            toast.error((error?.response?.data as Message)?.errors?.[0]?.msg || (error?.response?.data as Message)?.message || 'An error occurred');
         },
         onSuccess: (data) => {
             console.log(data);
@@ -46,8 +58,12 @@ const SignUp = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const data = Object.fromEntries(formData.entries());
-        mutate(data);
+        if (formData) {
+            const data = Object.fromEntries(formData.entries());
+            console.log(data);
+            //@ts-expect-error : data is not null
+            mutate(data);
+        }
 
     };
     return (

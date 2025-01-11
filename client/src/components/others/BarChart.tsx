@@ -1,15 +1,14 @@
 'use client';
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 
 
-
-import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { useQuery } from '@tanstack/react-query';
 import { baseAxios } from '@/lib/useAxios';
 import { useSession } from 'next-auth/react';
+import { MockObjectWithId } from '@/app/dashboard/page';
 const chartConfig = {
     focusMinutes: {
         label: "Focus Minutes",
@@ -18,15 +17,18 @@ const chartConfig = {
 };
 
 
-
+interface FocusData {
+    date: string;
+    focusMinutes: number;
+}
 const Barchart = () => {
     const x = useSession();
-    const id = x.data?.user?.id;
+    const id = (x.data?.user as MockObjectWithId)?.id;
     const { data } = useQuery({
         queryKey: ['barchart', id],
         queryFn: async () => {
             const response = await baseAxios.get(`/focus/get/${id}`);
-            return response.data?.data || [];
+            return (response.data?.data as FocusData[]) || [];
         },
         enabled: !!id,
         initialData: []

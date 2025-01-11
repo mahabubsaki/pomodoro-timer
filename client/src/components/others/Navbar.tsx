@@ -16,7 +16,9 @@ import Link from 'next/link';
 import { baseAxios } from '@/lib/useAxios';
 
 
-
+interface MockAvatar {
+    avatarUrl: string;
+}
 const Navbar = () => {
     const x = useSession();
     const user = x?.data?.user;
@@ -42,7 +44,7 @@ const Navbar = () => {
                     {user ? <>
 
                         <Avatar>
-                            <AvatarImage src={user.avatarUrl} alt="@shadcn" />
+                            <AvatarImage src={(user as MockAvatar)?.avatarUrl} alt="@shadcn" />
                             <AvatarFallback>U</AvatarFallback>
                         </Avatar>
                         <NavList>

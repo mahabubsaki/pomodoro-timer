@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const baseAxios = axios.create({
-    baseURL: 'http://localhost:5000/api/v1',
+    baseURL: process.env.NODE_ENV === 'development' ? process.env.BACKEND_API_DEV : process.env.BACKEND_API_PROD,
     withCredentials: true
 });
 

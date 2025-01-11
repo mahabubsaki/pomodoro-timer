@@ -5,7 +5,7 @@ dotenv.config({ path: path.join(process.cwd(), '.env') });
 
 const envConfigs = {
     // dbUri: process.env.MONGODB_URI,
-    port: process.env.BACKEND_PORT || 5000,
+    port: process.env.BACKEND_PORT || 5001,
     jwtSecret: process.env.JWT_SECRET,
 
 

@@ -24,6 +24,7 @@ interface FocusSession {
     paused: boolean;
 }
 const Focus = () => {
+
     const [time, setTime] = useState(25 * 60);
     const [isRunning, setIsRunning] = useState(false);
     const [paused, setPaused] = useState(false);
